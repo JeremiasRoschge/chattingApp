@@ -1,0 +1,163 @@
+body {
+  background: #f5f6fa;
+  font-family: 'Poppins', sans-serif;
+  background: url('/img/background.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.navbar {
+  background: black !important;
+}
+
+.nav-link {
+  color: #fff !important;
+}
+
+.masthead {
+  color: white;
+  min-height: 30rem;
+  width: 100%;
+  height: 100%;
+  padding-top: 8rem;
+  padding-bottom: 8rem;
+}
+
+.masthead h1 {
+  font-size: 4rem;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 992px) {
+  .masthead {
+    height: 100vh;
+  }
+  .masthead h1 {
+    font-size: 5.5rem;
+  }
+}
+
+#chat-container {
+  max-width: 1100px;
+  margin: 50px auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  animation: slide-in 0.5s ease-out;
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#chat-window {
+  padding: 20px;
+  width: 100%;
+  margin: 0;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+  background-color: #f9f9f9;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+#output {
+  overflow-y: auto;
+  max-height: 300px; /* Ajusta la altura máxima según tus necesidades */
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.chat-message .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ccc; /* Cambia esto por el color o imagen del avatar */
+  margin-right: 10px;
+}
+
+.chat-message .message {
+  flex-grow: 1;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.chat-message .message p {
+  margin: 0;
+}
+
+.chat-message .timestamp {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+}
+
+input {
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border: 0;
+  background: #eee;
+  display: block;
+  width: 100%;
+  color: #555;
+  resize: none;
+}
+
+#actions p {
+  padding: 20px;
+  margin: 0;
+  border-bottom: 1px solid #ccc;
+  color: #555;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+button {
+  background: #575ed8;
+  color: #fff;
+  font-size: 18px;
+  border: 0;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 0 0 2px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #4753b5;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container i {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translate(-50%, -50%);
+  color: gray;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.input-container:hover i {
+  opacity: 1;
+}

@@ -1,0 +1,18 @@
+
+
+<link rel="stylesheet" href="/css/styles.css">
+  <div id="chat-container" class="container p-4">
+    <p>{{chatName}}</p>
+    <div id="chat-window">
+      <div id="output" class="container p-4"></div>
+      <div id="actions"></div>
+    </div>
+    <div class="input-container">
+      <input type="text" id="username" placeholder="{{#if user}}{{user.username}}{{else}}Username{{/if}}" {{#if user}}readonly{{/if}} value="{{#if user}}{{user.username}}{{/if}}">
+      <i class="fas fa-lock"></i>
+    </div>
+    <input type="text" id="message" placeholder="Message">
+    <button id="send" class="btn btn-success btn-button">Send</button>
+  </div>
+  <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
+ <script>

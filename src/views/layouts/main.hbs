@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hackathon</title>
+  {{!-- GOOGLE FONTS --}}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+  {{!-- BOOTSTRAP 4 --}}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  {{!-- FONT AWESOME 5 --}}
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+    crossorigin="anonymous">
+  {{!-- STYLES --}}
+  <link rel="stylesheet" href="/css/styles.css">  
+  <link rel="stylesheet" href="../auth/auth.css">
+</head>
+
+<body>
+  {{>navigation}}
+  {{> message}}
+  {{{ body }}}
+
+  {{!-- SCRIPTS --}}
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+ <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
+<script>
+  const socket = io('http://localhost:3000');
+
+  // Obtener elementos del DOM
+  let messageInput = document.getElementById("message");
+  let usernameInput = document.getElementById("username");
+  let sendButton = document.getElementById("send");
+  let outputDiv = document.getElementById("output");
+  let actionsDiv = document.getElementById("actions");
+  let chatWindow = document.getElementById("chat-window")
+
+  function scrollChatToBottom() {
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+  // Obtén el chatId dinámicamente desde tu aplicación o desde algún elemento del DOM
+  const chatId = '{{ chatId }}';
+
+  const formatTimestamp = (timestamp) => {
+  const currentDate = new Date();
+  const messageDate = new Date(timestamp);
+  const diffInDays = Math.floor((currentDate - messageDate) / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) {
+    // Si el mensaje es del mismo día, mostrar solo la hora
+    const options = { hour: 'numeric', minute: 'numeric' };
+    return messageDate.toLocaleDateString('es-ES', options);
+  } else {
+    // Si han pasado uno o más días, mostrar fecha y hora en formato personalizado
+    const day = messageDate.getDate();
+    const month = messageDate.getMonth() + 1;
+    const year = messageDate.getFullYear();
+    const hours = messageDate.getHours();
+    const minutes = messageDate.getMinutes();
+
+    return `${day}/${month < 10 ? '0' + month : month}/${year} a las ${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+  }
+}
+
+  // Cargar mensajes utilizando fetch
+const loadMessages = async () => {
+  try {
+    const response = await fetch(`/chat/messages/${chatId}`, {
+      method: 'GET'
+    });
+    const data = await response.json();
+    const messages = data.messages;
+
+    outputDiv.innerHTML = "";
+    messages.forEach((message) => {
+      const formattedTimestamp = formatTimestamp(message.timestamp); // Formatear el timestamp
+      outputDiv.innerHTML += `<div class="chat-message">
+        <img class="avatar" src="${message.avatar}" alt="Avatar">
+        <div class="message">
+          <p>${message.username}: ${message.message}</p>
+          <p class="timestamp">${formattedTimestamp}</p>
+        </div>
+      </div>`;
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+  // Llamar a la función de carga de mensajes al inicio
+  loadMessages();
+
+  // Escuchar el evento de recepción de mensaje
+  socket.on("chat:message", (data) => {
+    actionsDiv.innerHTML = "";
+    outputDiv.innerHTML += `<div class="chat-message">
+      <img class="avatar" src="${data.avatar}" alt="Avatar">
+      <div class="message">
+        <p>${data.username}: ${data.message}</p>
+        <p class="timestamp">${data.timestamp}</p>
+      </div>
+    </div>`;
+  });
+
+  // Escuchar el evento de "escribiendo"
+  socket.on("chat:typing", (data) => {
+    actionsDiv.innerHTML = `<p><em>${data} está escribiendo</em></p>`;
+  });
+
+  // Escuchar el evento de conexión
+  socket.on("connect", () => {
+    console.log("Conexión WebSocket establecida");
+    socket.emit("chat:loadMessages", chatId);
+  });
+
+  // Manejar el evento de envío de mensaje
+  sendButton.addEventListener("click", () => {
+    const message = messageInput.value.trim();
+    const username = usernameInput ? usernameInput.value.trim() : "";
+    const userId = "{{ userId }}"; 
+    const timestamp = new Date().toISOString();
+
+    if (message !== "") {
+      // Enviar el mensaje al servidor
+      socket.emit("chat:message", {
+        chatId: chatId,
+        userId: userId,
+        username: username,
+        timestamp: timestamp,
+        message: message,
+      });
+      messageInput.value = "";
+      setTimeout(scrollChatToBottom, 0);
+    }
+  });
+
+  // Manejar el evento de "escribiendo"
+  messageInput.addEventListener("keypress", () => {
+    const username = usernameInput ? usernameInput.value.trim() : "";
+    socket.emit("chat:typing", username);
+  });
+
+  // Escuchar el evento de desconexión
+  socket.on("disconnect", () => {
+    console.log("Conexión WebSocket cerrada");
+  });
+
+</script>
+
+</html>

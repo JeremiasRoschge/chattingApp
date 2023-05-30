@@ -1,0 +1,12 @@
+
+<!-- verification.hbs -->
+<div class="container">
+  <h1>Verification Code</h1>
+  <form action="/auth/verify" method="POST">
+    <div class="form-group">
+      <label for="verificationCode">Enter the verification code:</label>
+      <input type="text" id="verificationCode" name="code" required>
+    </div>
+    <button type="submit">Verify</button>
+  </form>
+</div>
