@@ -1,0 +1,31 @@
+  url varchar(255),
+  description text,
+  user_id int,
+  created_at timestamp
+);
+
+messages table
+
+CREATE TABLE messages (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  chat_id int,
+  user_id int,
+  message text,
+  timestamp timestamp,
+  deleted tinyint(1),
+  username varchar(186)
+);
+
+
+users table
+
+CREATE TABLE users (
+  id int AUTO_INCREMENT PRIMARY KEY,
+  username varchar(16),
+  password varchar(200),
+  fullname varchar(100),
+  email varchar(256),
+  verifycode varchar(64),
+  isVerified tinyint(1)
+);
+
